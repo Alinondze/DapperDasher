@@ -60,7 +60,7 @@ int main()
 		nebule[i].pos.x = windowDimension[0] + i * 300;
 
 	}
-	
+	float finishLine{nebule[sizeOfNebule-1].pos.x};
 	//nebula X velocity(pixels/second)
 	int nebVel{ -300 };
 
@@ -79,7 +79,11 @@ int main()
 
 	int velocity{ 0 };
 	Texture2D background = LoadTexture("../textures/far-buildings.png");
+	Texture2D midground = LoadTexture("../textures/back-buildings.png");
+	Texture2D foreground = LoadTexture("../textures/foreground.png");
 	float bgX{};
+	float mgX{};
+	float fgX{};
 	//is the rectangle in the air
 	bool isInAir = false;
 	//jump velocity (pixels/second)
@@ -92,13 +96,43 @@ int main()
 		BeginDrawing();
 
 		ClearBackground(WHITE);
-
 		
-		//draw the background
-		Vector2 bgPos{ bgX,0.0 };
-		DrawTextureEx(background, bgPos, 0.0, 2.0, WHITE);
+		//draw the backgrounds
+		Vector2 bg1Pos{ bgX,0.0 };
+		DrawTextureEx(background, bg1Pos, 0.0, 2.0, WHITE);
 		const float dt = GetFrameTime();
 		bgX -= 20 * dt;
+		Vector2 bg2Pos{ bgX + background.width * 2,0.0 };
+		DrawTextureEx(background, bg2Pos, 0.0, 2.0, WHITE);
+		//Scroll background
+		if (bgX <= -background.width * 2)
+		{
+			bgX = 0.0;
+		}
+
+		//Scroll midground
+		mgX -= 40 * dt;
+		Vector2 mg1Pos{ mgX, 0.0 };
+		DrawTextureEx(midground,mg1Pos, 0.0, 2.0, WHITE );
+		Vector2 mg2Pos{ mgX + midground.width * 2,0.0 };
+		DrawTextureEx(midground, mg2Pos, 0.0, 2.0, WHITE);
+
+		if (mgX <= -midground.width * 2)
+		{
+			mgX = 0.0;
+		}
+
+		//Scroll foreground
+		fgX -= 80 * dt;
+		Vector2 fg1Pos{ fgX,0.0 };
+		DrawTextureEx(foreground, fg1Pos, 0.0, 2.0, WHITE);
+		Vector2 fg2Pos{ fgX + foreground.width * 2,0.0 };
+		DrawTextureEx(foreground,fg2Pos,0.0,2.0,WHITE);
+		if (fgX <= -foreground.width)
+		{
+			fgX = 0.0;
+		}
+
 		//perform ground check
 		if (isOnGround(scarfyData,windowDimension[1]))
 		{
@@ -133,7 +167,8 @@ int main()
 			//update the position of each nebula
 			nebule[i].pos.x += nebVel * dt;
 		}
-
+		//update finishline
+		finishLine += nebVel * dt;
 		//update position
 		scarfyData.pos.y += velocity * dt;
 
@@ -155,6 +190,8 @@ int main()
 	UnloadTexture(scarfy);
 	UnloadTexture(nebula);
 	UnloadTexture(background);
+	UnloadTexture(midground);
+	UnloadTexture(foreground);
 	CloseWindow();
 	return 0;
 }
